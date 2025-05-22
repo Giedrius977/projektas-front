@@ -1,0 +1,16 @@
+.fruit-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Po 4 korteles eilėje */
+  gap: 30px; /* Atstumas tarp kortelių */
+  justify-content: center;
+}
+
+.fruit-card {
+  text-align: center;
+}
+
+.fruit-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}

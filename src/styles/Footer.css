@@ -1,0 +1,30 @@
+.footer {
+  background-color: #f5f5f5;
+  padding: 10px 20px;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contact-box {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.contact-link img,
+.contact-link button {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+}
+
+.contact-text {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 14px;
+  vertical-align: middle;
+}

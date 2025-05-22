@@ -1,0 +1,44 @@
+.category-gallery-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.category-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.gallery-item {
+  width: calc(33.333% - 20px); /* 🔹 Užtikrina, kad bus trys nuotraukos vienoje eilutėje */
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.gallery-image:hover {
+  transform: scale(1.05);
+}
+
+.gallery-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.gallery-description {
+  font-size: 18px;
+  color: #555;
+  margin-top: 10px;
+  background-color: #f8f8f8;
+  padding: 10px;
+  border-radius: 8px;
+}

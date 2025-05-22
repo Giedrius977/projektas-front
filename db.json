@@ -1,0 +1,116 @@
+{
+  "furniture": [
+    {
+      "id": 1,
+      "category": "Virtuvės",
+      "name": "Virtuvės komplektas",
+      "images": [
+        "/images/virt_1.jpg",
+        "/images/virt_2.jpg",
+        "/images/virt_3.jpg",
+        "/images/virt_4.jpg",
+        "/images/virt_5.jpg",
+        "/images/virt_6.jpg",
+        "/images/virt_7.jpg",
+        "/images/virt_8.jpg",
+        "/images/virt_9.jpg"
+      ],
+      "description": "Klasikinės, modernios, praktiškos virtuvės."
+    },
+    {
+      "id": 2,
+      "category": "Spintos",
+      "name": "Spinta",
+      "images": [
+        "/images/spint_1.jpg",
+        "/images/spint_2.jpg",
+        "/images/spint_3.jpg",
+        "/images/spint_4.jpg",
+        "/images/spint_5.jpg",
+        "/images/spint_6.jpg",
+        "/images/spint_7.jpg",
+        "/images/spint_8.jpg",
+        "/images/spint_9.jpg"
+      ],
+      "description": "Erdvi, su daugybe lentynų ir stalčių."
+    },
+    {
+      "id": 3,
+      "category": "Kiti",
+      "name": "Kiti baldai",
+      "images": [
+        "/images/kiti_1.jpg",
+        "/images/kiti_2.jpg",
+        "/images/kiti_3.jpg",
+        "/images/kiti_4.jpg",
+        "/images/kiti_5.jpg",
+        "/images/kiti_6.jpg",
+        "/images/kiti_7.jpg",
+        "/images/kiti_8.jpg",
+        "/images/kiti_9.jpg"
+      ],
+      "description": "Vonios baldai, kosmetiniai staleliai, komodos."
+    }
+  ],
+  "contactRequests": [
+    {
+      "id": "0092",
+      "name": "Simonas",
+      "phone": "+37064054321",
+      "email": "simonas.pav@duratai.kdf",
+      "message": "Labas, ar galiu uzsakyti darbo stala ir spinta?",
+      "createdAt": "2025-05-22T07:02:33.304Z"
+    },
+    {
+      "id": "dd88",
+      "name": "Diana",
+      "phone": "+37064098754",
+      "email": "di.anna@soft.lkj",
+      "message": "Sveiki, domina baldai jaunuolio kambariui, prisegu projekta lauksiu pasiulymo ",
+      "file": "data:text/plain;base64,bnB4IGpzb24tc2VydmVyIC0td2F0Y2ggZGIuanNvbiAtLXBvcnQgMzAwMA0KDQoNCm5wbSBzdGFydA0K",
+      "createdAt": "2025-05-22T07:08:49.776Z"
+    }
+  ],
+  "projects": [{
+      "id": 1,
+      "clientName": "Simonas",
+      "email": "simonas.pav@duratai.kdf",
+      "phone": "+37064054321",
+      "description": "Darbo stalas ir spinta",
+      "status": "Vertinamas",
+      "estimatedPrice": null,
+      "estimatedDeadline": null,
+      "materials": null,
+      "notes": null,
+      "createdAt": "2025-05-22T07:02:33.304Z",
+      "steps": [
+        { "title": "Užklausa gauta", "done": true },
+        { "title": "Vertinimas", "done": false },
+        { "title": "Projektavimas", "done": false },
+        { "title": "Gamyba", "done": false },
+        { "title": "Pristatymas", "done": false }
+      ]
+    },
+    {
+      "id": 2,
+      "clientName": "Eglė",
+      "email": "egle@example.com",
+      "phone": "+37061234567",
+      "description": "Virtuvės komplektas",
+      "status": "Projektuojamas",
+      "estimatedPrice": "1500-1800 €",
+      "estimatedDeadline": "2025-06-30",
+      "materials": "Ąžuolas, MDF dažytas",
+      "notes": "Klientas pageidauja šviesių spalvų",
+      "createdAt": "2025-05-20T10:15:00.000Z",
+      "steps": [
+        { "title": "Užklausa gauta", "done": true },
+        { "title": "Vertinimas", "done": true },
+        { "title": "Projektavimas", "done": true },
+        { "title": "Gamyba", "done": false },
+        { "title": "Pristatymas", "done": false }
+      ]
+    }
+  ]
+
+}
