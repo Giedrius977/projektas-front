@@ -6,30 +6,42 @@ const ContactForm = ({ onClose }) => {
     phone: "",
     email: "",
     message: "",
-    file: null,  // čia bus base64 stringas
+    file: null,
+    fileName: "",
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // failo konvertavimas į base64 stringą
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, file: reader.result }));
+        setFormData((prev) => ({
+          ...prev,
+          file: reader.result,
+          fileName: file.name,
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
+  const handleFileRemove = () => {
+    setFormData((prev) => ({
+      ...prev,
+      file: null,
+      fileName: "",
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch("http://localhost:3000/contactRequests", {
+      const response = await fetch("http://localhost:8083/api/contact-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -37,7 +49,7 @@ const ContactForm = ({ onClose }) => {
           phone: formData.phone,
           email: formData.email,
           message: formData.message,
-          file: formData.file, // siunčiame base64 stringą
+          file: formData.file,
           createdAt: new Date().toISOString(),
         }),
       });
@@ -97,6 +109,15 @@ const ContactForm = ({ onClose }) => {
 
           <label>Pridėti failą:</label>
           <input type="file" name="file" onChange={handleFileChange} />
+
+          {formData.file && (
+            <div className="file-preview">
+              <p>Įkeltas failas: {formData.fileName}</p>
+              <button type="button" onClick={handleFileRemove}>
+                Pašalinti failą
+              </button>
+            </div>
+          )}
 
           <div className="button-group">
             <button type="submit">Siųsti</button>

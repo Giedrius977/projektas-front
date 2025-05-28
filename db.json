@@ -52,29 +52,20 @@
       "description": "Vonios baldai, kosmetiniai staleliai, komodos."
     }
   ],
-  "contactRequests": [
+  "contact-requests": [
     {
       "id": "0092",
-      "name": "Simonas",
+      "name": "Semas",
       "phone": "+37064054321",
-      "email": "simonas.pav@duratai.kdf",
+      "email": "semas.pav@duratai.kdf",
       "message": "Labas, ar galiu uzsakyti darbo stala ir spinta?",
       "createdAt": "2025-05-22T07:02:33.304Z"
-    },
-    {
-      "id": "dd88",
-      "name": "Diana",
-      "phone": "+37064098754",
-      "email": "di.anna@soft.lkj",
-      "message": "Sveiki, domina baldai jaunuolio kambariui, prisegu projekta lauksiu pasiulymo ",
-      "file": "data:text/plain;base64,bnB4IGpzb24tc2VydmVyIC0td2F0Y2ggZGIuanNvbiAtLXBvcnQgMzAwMA0KDQoNCm5wbSBzdGFydA0K",
-      "createdAt": "2025-05-22T07:08:49.776Z"
     }
   ],
   "projects": [{
       "id": 1,
-      "clientName": "Simonas",
-      "email": "simonas.pav@duratai.kdf",
+      "clientName": "Simonas P",
+      "email": "simonas.pav@duratai.it",
       "phone": "+37064054321",
       "description": "Darbo stalas ir spinta",
       "status": "Vertinamas",
@@ -100,7 +91,7 @@
       "status": "Projektuojamas",
       "estimatedPrice": "1500-1800 €",
       "estimatedDeadline": "2025-06-30",
-      "materials": "Ąžuolas, MDF dažytas",
+      "materials": "Ąžuolo lukštas, MDF dažytas",
       "notes": "Klientas pageidauja šviesių spalvų",
       "createdAt": "2025-05-20T10:15:00.000Z",
       "steps": [

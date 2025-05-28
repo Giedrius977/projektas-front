@@ -31,10 +31,27 @@ const filteredItems = furnitureArray.filter(item => removeDiacritics(item.catego
     baldų.</h1>;
 return ( <div className="category-gallery-container"> 
 <h2>{id}</h2> {/* Rodomas pasirinktos kategorijos pavadinimas */}
-<div className="category-gallery"> {items.map((item, idx) => ( <div key={idx} className="gallery-item"> 
-  <h3>{item.name}</h3> 
-<p className="gallery-description">{item.description}</p>
-<div className="image-gallery"> {item.images.map((imgSrc, imgIdx) => ( <img key={imgIdx} src={imgSrc} alt={`${item.name} - ${imgIdx + 1}`} className="gallery-image" /> ))} </div> 
-</div>
-))} </div> </div> ); };
+{items.map((item, idx) => (
+  <div key={idx} className="gallery-item-split">
+    <div className="left-info">
+      <h3>{item.name}</h3>
+      <p className="gallery-description">{item.description}</p>
+    </div>
+    <div className="right-gallery">
+      <div className="scrollable-images">
+        {item.images.map((imgSrc, imgIdx) => (
+          <img
+            key={imgIdx}
+            src={imgSrc}
+            alt={`${item.name} - ${imgIdx + 1}`}
+            className="gallery-image"
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+))}
+ </div>
+); 
+};
 export default CategoryGallery; 

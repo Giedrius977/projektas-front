@@ -118,7 +118,7 @@
 }
 
 .gallery-image {
-  max-width: 100%; /* Neleidžia nuotraukoms tapti didesnėms už konteinerį */
+  max-width: 95%; /* Neleidžia nuotraukoms tapti didesnėms už konteinerį */
   height: auto; /* Išlaiko proporcijas */
 }
 
@@ -134,6 +134,7 @@
 /* Kategorijos galerijos konteineris */
 .category-gallery-container {
   max-width: 100%;
+  box-sizing: border-box;
   overflow: hidden; /* Neleidžiame nuotraukoms išlįsti iš ekrano */
 }
 
@@ -160,6 +161,8 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   position: relative;
   display: flex;
+  max-width: 400px;
+  min-width: 280px;
   flex-direction: column;
   gap: 12px;
 }

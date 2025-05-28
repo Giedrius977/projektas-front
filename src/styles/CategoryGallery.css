@@ -1,44 +1,67 @@
 .category-gallery-container {
-  text-align: center;
   padding: 20px;
+  max-width: 1200px;
+  margin: auto;
 }
 
-.category-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.gallery-item {
-  width: calc(33.333% - 20px); /* 🔹 Užtikrina, kad bus trys nuotraukos vienoje eilutėje */
+.category-title {
   text-align: center;
-  box-sizing: border-box;
-}
-
-.gallery-image {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-  border-radius: 10px;
-  transition: transform 0.3s ease-in-out;
-}
-
-.gallery-image:hover {
-  transform: scale(1.05);
-}
-
-.gallery-title {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: bold;
-  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.gallery-item-split {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  align-items: flex-start;
+}
+
+.left-info {
+  flex: 0 0 300px;
+  position: sticky;
+  top: 20px;
+  background-color: #fff;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  height: fit-content;
 }
 
 .gallery-description {
-  font-size: 18px;
+  font-size: 16px;
   color: #555;
   margin-top: 10px;
   background-color: #f8f8f8;
   padding: 10px;
   border-radius: 8px;
+}
+
+.right-gallery {
+  flex: 1;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 1rem;
+  border-left: 2px solid #eee;
+}
+
+.scrollable-images {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.gallery-image {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.gallery-image:hover {
+  transform: scale(1.02);
 }
