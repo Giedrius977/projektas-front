@@ -1,12 +1,12 @@
 .footer {
-  background-color: #f5f5f5;
+  background-color:transparent;
   padding: 10px 20px;
   text-align: center;
-  border-top: 1px solid #ddd;
+  border-top: transparent;
 }
 
 .footer-content {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -17,14 +17,14 @@
 
 .contact-link img,
 .contact-link button {
-  width: 32px;
-  height: 32px;
+  width: 35px;
+  height: 30px;
   vertical-align: middle;
 }
 
 .contact-text {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: 3px;
   font-size: 14px;
   vertical-align: middle;
 }

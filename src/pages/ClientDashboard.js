@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-function ClientDashboard({ clientId }) {
+function ClientDashboard({ username, onLogout }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,8 +11,8 @@ function ClientDashboard({ clientId }) {
         setLoading(true);
         setError(null);
 
-        // Pakeisk URL pagal savo backend adresą ir parametru filtravimą
-        const response = await fetch(`/api/projects?clientId=${clientId}`);
+        // Tarkim, backend laukia username kaip filtro parametras
+        const response = await fetch(`/api/projects?client=${username}`);
 
         if (!response.ok) {
           throw new Error("Nepavyko gauti projektų");
@@ -27,41 +27,43 @@ function ClientDashboard({ clientId }) {
       }
     }
 
-    if (clientId) {
+    if (username) {
       fetchProjects();
     }
-  }, [clientId]);
-
-  if (!clientId) {
-    return <p>Prašome prisijungti, kad galėtumėte matyti savo projektus.</p>;
-  }
-
-  if (loading) return <p>Kraunama projektų informacija...</p>;
-  if (error) return <p>Klaida: {error}</p>;
-
-  if (projects.length === 0) return <p>Projektų dar nėra.</p>;
+  }, [username]);
 
   return (
-    <div className="client-dashboard">
-      <h2>Jūsų projektai</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Projekto pavadinimas</th>
-            <th>Statusas</th>
-            <th>Sukūrimo data</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((project) => (
-            <tr key={project.id}>
-              <td>{project.name}</td>
-              <td>{project.status}</td>
-              <td>{new Date(project.createdAt).toLocaleDateString()}</td>
+    <div className="client-dashboard" style={{ padding: "20px" }}>
+      <h2>Užsakovo panelė</h2>
+      <button onClick={onLogout} style={{ marginBottom: "1rem" }}>
+        Atsijungti
+      </button>
+
+      {loading && <p>Kraunama...</p>}
+      {error && <p style={{ color: "red" }}>Klaida: {error}</p>}
+
+      {!loading && projects.length === 0 && <p>Projektų nėra.</p>}
+
+      {projects.length > 0 && (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>Projekto pavadinimas</th>
+              <th>Statusas</th>
+              <th>Sukūrimo data</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {projects.map((p) => (
+              <tr key={p.id}>
+                <td>{p.name}</td>
+                <td>{p.status}</td>
+                <td>{new Date(p.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

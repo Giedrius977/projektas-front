@@ -5,7 +5,7 @@ import "./styles/Footer.css";
 import "./styles/ContactPage.css";
 
 const categories = [
-  { id: "virtuvės", name: "Virtuvės baldai", image: "/images/virtuves.jpg" },
+  { id: "virtuvės", name: "Virtuvės", image: "/images/virtuves.jpg" },
   { id: "spintos", name: "Spintos", image: "/images/spintos.jpg" },
   { id: "kiti", name: "Kiti baldai", image: "/images/kiti.jpg" }
 ];

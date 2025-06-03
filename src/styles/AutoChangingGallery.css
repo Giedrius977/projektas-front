@@ -1,52 +1,96 @@
+/* Galerijos viršutinė juosta su logotipu, pavadinimu ir nuorodomis */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: #f0f0f0;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+}
+
+.gallery-title {
+  flex: 1;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+  color: #333;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Galerijos blokas */
+.gallery-container {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Kortelių konteineris */
 .furniture-gallery {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   gap: 20px;
+  flex-wrap: wrap; /* leidžia kortelėms persirikiuoti mažesniuose ekranuose */
 }
 
+/* Viena kortelė */
 .category-card {
   flex: 1;
-  width: 40%; /* 🔹 Platesnės kortelės */
-  height: 400px; /* 🔹 Aukštesnės kortelės */
+  width: 40%;
+  height: 400px;
   text-align: center;
   cursor: pointer;
-  border: 5px solid #444; /* Storesnis rėmelis */
+  border: 5px solid #444;
   border-radius: 12px;
   padding: 10px;
   transition: transform 0.3s ease-in-out, border-color 0.3s;
+  box-sizing: border-box;
 }
 
+/* Kortelės efektas užvedus pelę */
 .category-card:hover {
   transform: scale(1.05);
   border-color: #666;
 }
 
+/* Nuotraukos laikiklis kortelėje */
 .image-box {
   width: 100%;
-  height: 100%; /* 🔹 Fiksuotas dydis, kad rėmelis nesikeistų */
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Nuotrauka kortelėje */
 .image-box img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 🔹 Nuotrauka išlaiko proporcijas, nesikeičia kortelės dydis */
+  object-fit: contain;
   border-radius: 10px;
 }
-.gallery-container {
-  text-align: center;
-  padding: 20px;
-}
 
-.gallery-title {
-  font-size: 32px; /* Didesnis tekstas */
+/* Kortelės pavadinimas */
+.image-caption {
+  font-size: 22px;
   font-weight: bold;
-  text-align: center; /* Užtikrina centravimą */
-  margin: 20px auto; /* Automatinis išlygiavimas */
-  display: block; /* Užtikrina, kad tekstas nejudėtų */
-  width: 100%;
+  margin-top: 10px;
+  color: #222;
 }

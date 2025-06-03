@@ -14,7 +14,7 @@ function ProjectStatus({ projectId }) {
   const [newStatus, setNewStatus] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:3000/projects/${projectId}`)
+    fetch(`http://localhost:8083/api/projects/${projectId}`)
       .then(res => res.json())
       .then(data => {
         setProject(data);
@@ -31,7 +31,7 @@ function ProjectStatus({ projectId }) {
       comment: `Statusas pakeistas į "${newStatus}"`
     }];
 
-    fetch(`http://localhost:3000/projects/${projectId}`, {
+    fetch(`http://localhost:8083/api/projects/${projectId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

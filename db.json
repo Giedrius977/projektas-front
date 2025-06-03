@@ -3,7 +3,7 @@
     {
       "id": 1,
       "category": "Virtuvės",
-      "name": "Virtuvės komplektas",
+      "name": "Virtuvė",
       "images": [
         "/images/virt_1.jpg",
         "/images/virt_2.jpg",
@@ -49,59 +49,9 @@
         "/images/kiti_8.jpg",
         "/images/kiti_9.jpg"
       ],
-      "description": "Vonios baldai, kosmetiniai staleliai, komodos."
-    }
-  ],
-  "contact-requests": [
-    {
-      "id": "0092",
-      "name": "Semas",
-      "phone": "+37064054321",
-      "email": "semas.pav@duratai.kdf",
-      "message": "Labas, ar galiu uzsakyti darbo stala ir spinta?",
-      "createdAt": "2025-05-22T07:02:33.304Z"
-    }
-  ],
-  "projects": [{
-      "id": 1,
-      "clientName": "Simonas P",
-      "email": "simonas.pav@duratai.it",
-      "phone": "+37064054321",
-      "description": "Darbo stalas ir spinta",
-      "status": "Vertinamas",
-      "estimatedPrice": null,
-      "estimatedDeadline": null,
-      "materials": null,
-      "notes": null,
-      "createdAt": "2025-05-22T07:02:33.304Z",
-      "steps": [
-        { "title": "Užklausa gauta", "done": true },
-        { "title": "Vertinimas", "done": false },
-        { "title": "Projektavimas", "done": false },
-        { "title": "Gamyba", "done": false },
-        { "title": "Pristatymas", "done": false }
-      ]
-    },
-    {
-      "id": 2,
-      "clientName": "Eglė",
-      "email": "egle@example.com",
-      "phone": "+37061234567",
-      "description": "Virtuvės komplektas",
-      "status": "Projektuojamas",
-      "estimatedPrice": "1500-1800 €",
-      "estimatedDeadline": "2025-06-30",
-      "materials": "Ąžuolo lukštas, MDF dažytas",
-      "notes": "Klientas pageidauja šviesių spalvų",
-      "createdAt": "2025-05-20T10:15:00.000Z",
-      "steps": [
-        { "title": "Užklausa gauta", "done": true },
-        { "title": "Vertinimas", "done": true },
-        { "title": "Projektavimas", "done": true },
-        { "title": "Gamyba", "done": false },
-        { "title": "Pristatymas", "done": false }
-      ]
+      "description": "TV komodos, kosmetiniai staleliai, praustuvų spintelės."
     }
   ]
+ 
 
 }

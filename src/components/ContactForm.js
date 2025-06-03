@@ -37,34 +37,37 @@ const ContactForm = ({ onClose }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formattedDate = new Date().toISOString().slice(0, 19).replace("T", " "); // Teisingas formatas MySQL
+
     try {
-      const response = await fetch("http://localhost:8083/api/contact-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email,
-          message: formData.message,
-          file: formData.file,
-          createdAt: new Date().toISOString(),
-        }),
-      });
+        const response = await fetch("http://localhost:8083/api/contact-requests", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email,
+                message: formData.message,
+                file: formData.file,
+                createdAt: formattedDate, // 🟢 Pridėtas `formattedDate`
+            }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Klaida siunčiant formą: ${response.statusText}`);
-      }
+        if (!response.ok) {
+            throw new Error(`Klaida siunčiant formą: ${response.statusText}`);
+        }
 
-      alert("✅ Jūsų užklausa sėkmingai išsiųsta!");
-      onClose();
+        alert("✅ Jūsų užklausa sėkmingai išsiųsta!");
+        onClose();
     } catch (error) {
-      alert("❌ Klaida siunčiant formą: " + error.message);
-      console.error(error);
+        alert("❌ Klaida siunčiant formą: " + error.message);
+        console.error(error);
     }
-  };
+};
+
 
   return (
     <div className="modal-overlay" onClick={onClose}>

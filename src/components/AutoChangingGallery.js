@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import '../styles/AutoChangingGallery.css';
 
 const categories = [
-  { id: "virtuves", name: "Virtuvės baldai", images: ["/images/virt_1.jpg", "/images/virt_2.jpg", "/images/virt_3.jpg","/images/virt_4.jpg", "/images/virt_5.jpg", "/images/virt_6.jpg","/images/virt_7.jpg", "/images/virt_8.jpg", "/images/virt_9.jpg"] },
+  { id: "virtuves", name: "Virtuvės", images: ["/images/virt_1.jpg", "/images/virt_2.jpg", "/images/virt_3.jpg","/images/virt_4.jpg", "/images/virt_5.jpg", "/images/virt_6.jpg","/images/virt_7.jpg", "/images/virt_8.jpg", "/images/virt_9.jpg"] },
   { id: "spintos", name: "Spintos", images: ["/images/spint_1.jpg", "/images/spint_2.jpg", "/images/spint_3.jpg",
       "/images/spint_4.jpg", "/images/spint_5.jpg", "/images/spint_6.jpg",
       "/images/spint_7.jpg", "/images/spint_8.jpg", "/images/spint_9.jpg"] },
@@ -24,7 +24,7 @@ const AutoChangingGallery = () => {
             prevIndexes.map((index, i) => (i === idx ? (index + 1) % categories[i].images.length : index))
           );
         }, 4000);
-      }, idx * 2000) // Laiko poslinkis tarp kiekvienos kategorijos
+      }, idx * 3000) // Laiko poslinkis tarp kiekvienos kategorijos
     );
 
     return () => intervals.forEach(clearTimeout);
@@ -32,7 +32,7 @@ const AutoChangingGallery = () => {
 
   return (
     <div className="gallery-container">
-      <h1 className="gallery-title">Kokybiški baldai laiku!</h1>
+      
       <div className="furniture-gallery">
         {categories.map((category, idx) => (
           <div key={category.id} className="category-card" onClick={() => navigate(`/category/${category.id}`)}>
