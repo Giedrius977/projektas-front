@@ -130,22 +130,22 @@ const AdminPanel = () => {
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
               Data
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "90px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
               Vardas
             </th>
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "70px" }}>
               Telefonas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "110px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "80px" }}>
               El. paštas
             </th>
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "190px" }}>
               Žinutė
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "70px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "40px" }}>
               Failas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "70px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
               Būsena
             </th>
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "100px" }}>

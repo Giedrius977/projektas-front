@@ -31,6 +31,7 @@ const Header = ({ onLoginClick, userRole, isAuthenticated, onLogout }) => (
       ) : (
         <span onClick={onLoginClick} className="nav-link">prisijungti</span>
       )}
+      <Link to="/" className="nav-link">pradinis</Link>
       <Link to="/about" className="nav-link">apie mus</Link>
       <Link to="/contact" className="nav-link">kontaktai</Link>
     </nav>
@@ -52,20 +53,21 @@ function App() {
   const [username, setUsername] = useState(null); // Reikalinga ClientDashboard
 
   const handleLogin = (username, password) => {
-    if (username === "admin" && password === "admin123") {
-      setIsAuthenticated(true);
-      setUserRole("admin");
-      setIsLoginOpen(false);
-      setUsername(username);
-    } else if (username === "client1" && password === "client123") {
-      setIsAuthenticated(true);
-      setUserRole("client");
-      setIsLoginOpen(false);
-      setUsername(username);
-    } else {
-      alert("Neteisingi prisijungimo duomenys");
-    }
-  };
+  if (username === "admin" && password === "admin123") {
+    setIsAuthenticated(true);
+    setUserRole("admin");
+    setIsLoginOpen(false);
+    setUsername(username);
+  } else if (password === username + "123") {
+    // Bet koks klientas, jei slaptažodis yra username + '123'
+    setIsAuthenticated(true);
+    setUserRole("client");
+    setIsLoginOpen(false);
+    setUsername(username);
+  } else {
+    alert("Neteisingi prisijungimo duomenys");
+  }
+};
 
   const handleLogout = () => {
     setIsAuthenticated(false);
