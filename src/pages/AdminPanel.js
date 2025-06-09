@@ -18,6 +18,7 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [expandedMessageIds, setExpandedMessageIds] = useState(new Set());
+  const [editingField, setEditingField] = useState({ id: null, field: null });
 
   useEffect(() => {
     setLoading(true);
@@ -27,11 +28,13 @@ const AdminPanel = () => {
         return res.json();
       })
       .then((data) => {
-        // Pridedam status ir convertedToProject, jei nėra
         const initialized = data.map((item) => ({
           ...item,
           status: item.status || "Nevertinta",
           convertedToProject: item.convertedToProject || false,
+          deliveryDate: item.deliveryDate || "",
+          orderPrice: item.orderPrice || "",
+          notes: item.notes || "",
         }));
         setRequests(initialized);
         setError(null);
@@ -57,23 +60,7 @@ const AdminPanel = () => {
   };
 
   const handleStatusChange = (id, newStatus) => {
-    setRequests((prev) =>
-      prev.map((req) => (req.id === id ? { ...req, status: newStatus } : req))
-    );
-
-    fetch(`http://localhost:8083/api/contact-requests/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: newStatus }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Nepavyko išsaugoti būsenos");
-      })
-      .catch((err) => {
-        alert("Klaida saugant būseną: " + err.message);
-      });
+    updateField(id, 'status', newStatus);
   };
 
   const toggleMessage = (id) => {
@@ -85,27 +72,71 @@ const AdminPanel = () => {
     });
   };
 
-  // Konvertavimo funkcija: userId imamas toks pat kaip contact request id
   const convertToProject = (id) => {
-    const userId = id; // Pakeista, kad siųstų contact-request id kaip userId
+  const request = requests.find(req => req.id === id);
+  if (!request) return;
 
-    fetch(`http://localhost:8083/api/contact-requests/convert/${id}?userId=${userId}`, {
-      method: "POST",
+  fetch(`http://localhost:8083/api/contact-requests/convert/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: id, // Ar tikrai tai yra teisingas userId?
+      deliveryDate: request.deliveryDate,
+      orderPrice: request.orderPrice,
+      notes: request.notes
+    }),
+  })
+  .then((res) => {
+    if (!res.ok) throw new Error("Nepavyko konvertuoti į projektą");
+    return res.json();
+  })
+  .then((project) => {
+    alert(`Užklausa paversta projektu #${project.id}`);
+    updateField(id, 'convertedToProject', true);
+  })
+  .catch((err) => alert(err.message));
+};
+
+  const startEditing = (id, field) => {
+    setEditingField({ id, field });
+  };
+
+  const handleFieldChange = (id, field, value) => {
+    setRequests(prev => 
+      prev.map(req => 
+        req.id === id ? { ...req, [field]: value } : req
+      )
+    );
+  };
+
+  const saveField = (id, field) => {
+    const request = requests.find(req => req.id === id);
+    if (!request) return;
+
+    updateField(id, field, request[field]);
+    setEditingField({ id: null, field: null });
+  };
+
+  const updateField = (id, field, value) => {
+    setRequests((prev) =>
+      prev.map((req) => (req.id === id ? { ...req, [field]: value } : req))
+    );
+
+    fetch(`http://localhost:8083/api/contact-requests/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ [field]: value }),
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Nepavyko konvertuoti į projektą");
-        return res.json();
+        if (!res.ok) throw new Error(`Nepavyko išsaugoti ${field}`);
       })
-      .then((project) => {
-        alert(`Užklausa paversta projektu #${project.id}`);
-        // Pažymim užklausą kaip konvertuotą
-        setRequests((prev) =>
-          prev.map((req) =>
-            req.id === id ? { ...req, convertedToProject: true } : req
-          )
-        );
-      })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        alert(`Klaida saugant ${field}: ` + err.message);
+      });
   };
 
   const truncateLength = 100;
@@ -127,29 +158,38 @@ const AdminPanel = () => {
       >
         <thead style={{ backgroundColor: "#007ACC", color: "white" }}>
           <tr>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "40px" }}>
               Data
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "30px" }}>
               Vardas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "70px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "55px" }}>
               Telefonas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "80px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
               El. paštas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "190px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "220px" }}>
               Žinutė
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "40px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "30px" }}>
               Failas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "55px" }}>
               Būsena
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "100px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
               Veiksmai
+            </th>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
+              Pristatymo data
+            </th>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
+              Užsakymo kaina
+            </th>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "70px" }}>
+              Pastabos
             </th>
           </tr>
         </thead>
@@ -257,16 +297,116 @@ const AdminPanel = () => {
                     }}
                   >
                     {request.convertedToProject
-                      ? "Jau paversta projektu"
-                      : "Konvertuoti į projektą"}
+                      ? "projektas"
+                      : "sukurti projektą"}
                   </button>
+                </td>
+                <td style={{ padding: "10px" }}>
+                  {editingField.id === request.id && editingField.field === 'deliveryDate' ? (
+                    <>
+                      <input
+                        type="date"
+                        value={request.deliveryDate || ''}
+                        onChange={(e) => handleFieldChange(request.id, 'deliveryDate', e.target.value)}
+                        style={{ width: '100%', padding: '4px' }}
+                      />
+                      <button 
+                        onClick={() => saveField(request.id, 'deliveryDate')}
+                        style={{ 
+                          marginTop: '5px',
+                          backgroundColor: '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '2px 5px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✓
+                      </button>
+                    </>
+                  ) : (
+                    <div 
+                      onClick={() => startEditing(request.id, 'deliveryDate')}
+                      style={{ cursor: 'pointer', minHeight: '20px' }}
+                    >
+                      {request.deliveryDate ? formatDate(request.deliveryDate) : "Nenustatyta"}
+                    </div>
+                  )}
+                </td>
+                <td style={{ padding: "10px" }}>
+                  {editingField.id === request.id && editingField.field === 'orderPrice' ? (
+                    <>
+                      <input
+                        type="text"
+                        value={request.orderPrice || ''}
+                        onChange={(e) => handleFieldChange(request.id, 'orderPrice', e.target.value)}
+                        style={{ width: '100%', padding: '4px' }}
+                        placeholder="Įveskite kainą"
+                      />
+                      <button 
+                        onClick={() => saveField(request.id, 'orderPrice')}
+                        style={{ 
+                          marginTop: '5px',
+                          backgroundColor: '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '2px 5px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✓
+                      </button>
+                    </>
+                  ) : (
+                    <div 
+                      onClick={() => startEditing(request.id, 'orderPrice')}
+                      style={{ cursor: 'pointer', minHeight: '20px' }}
+                    >
+                      {request.orderPrice || "Nenustatyta"}
+                    </div>
+                  )}
+                </td>
+                <td style={{ padding: "10px" }}>
+                  {editingField.id === request.id && editingField.field === 'notes' ? (
+                    <>
+                      <textarea
+                        value={request.notes || ''}
+                        onChange={(e) => handleFieldChange(request.id, 'notes', e.target.value)}
+                        style={{ width: '100%', padding: '4px', minHeight: '50px' }}
+                        placeholder="Įveskite pastabas"
+                      />
+                      <button 
+                        onClick={() => saveField(request.id, 'notes')}
+                        style={{ 
+                          marginTop: '5px',
+                          backgroundColor: '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '2px 5px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✓
+                      </button>
+                    </>
+                  ) : (
+                    <div 
+                      onClick={() => startEditing(request.id, 'notes')}
+                      style={{ cursor: 'pointer', minHeight: '50px' }}
+                    >
+                      {request.notes || "Nėra pastabų"}
+                    </div>
+                  )}
                 </td>
               </tr>
             );
           })}
           {requests.length === 0 && !loading && (
             <tr>
-              <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
+              <td colSpan="11" style={{ textAlign: "center", padding: "20px" }}>
                 Užklausų nėra
               </td>
             </tr>

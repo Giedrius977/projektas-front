@@ -4,65 +4,142 @@ function ClientDashboard({ username, onLogout }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    async function fetchProjects() {
+    async function fetchData() {
       try {
         setLoading(true);
         setError(null);
-
-        // Tarkim, backend laukia username kaip filtro parametras
-        const response = await fetch(`/api/projects?client=${username}`);
-
-        if (!response.ok) {
-          throw new Error("Nepavyko gauti projektų");
+        
+        // 1. Get user by username
+        const userResponse = await fetch(
+          `http://localhost:8083/api/users/by-username/${username}`
+        );
+        
+        if (!userResponse.ok) {
+          throw new Error("Failed to fetch user data");
         }
-
-        const data = await response.json();
-        setProjects(data);
+        
+        const userData = await userResponse.json();
+        setUserInfo(userData);
+        
+        // 2. Get user's projects with additional fields
+        const projectsResponse = await fetch(
+          `http://localhost:8083/api/users/${userData.id}/projects?includeContactInfo=true`
+        );
+        
+        if (!projectsResponse.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+        
+        const projectsData = await projectsResponse.json();
+        setProjects(projectsData);
+        
       } catch (err) {
-        setError(err.message || "Įvyko klaida");
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     }
 
     if (username) {
-      fetchProjects();
+      fetchData();
     }
   }, [username]);
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "Nenustatyta";
+    try {
+      return new Date(dateString).toLocaleDateString('lt-LT');
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatPrice = (price) => {
+    if (!price) return "Nenustatyta";
+    return `${price} €`;
+  };
+
   return (
     <div className="client-dashboard" style={{ padding: "20px" }}>
-      <h2>Užsakovo panelė</h2>
-      <button onClick={onLogout} style={{ marginBottom: "1rem" }}>
-        Atsijungti
-      </button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h2>Mano užsakymai</h2>
+        <button 
+          onClick={onLogout}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#f44336",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          Atsijungti
+        </button>
+      </div>
+
+      {userInfo && (
+        <div style={{ marginBottom: "20px" }}>
+          <p><strong>Vartotojas:</strong> {userInfo.name || username}</p>
+          <p><strong>El. paštas:</strong> {userInfo.email || "Nenurodytas"}</p>
+          <p><strong>Telefonas:</strong> {userInfo.phone || "Nenurodytas"}</p>
+        </div>
+      )}
 
       {loading && <p>Kraunama...</p>}
       {error && <p style={{ color: "red" }}>Klaida: {error}</p>}
 
-      {!loading && projects.length === 0 && <p>Projektų nėra.</p>}
+      {!loading && projects.length === 0 && !error && (
+        <p>Šiuo metu neturite jokių užsakymų.</p>
+      )}
 
       {projects.length > 0 && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>Projekto pavadinimas</th>
-              <th>Statusas</th>
-              <th>Sukūrimo data</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((p) => (
-              <tr key={p.id}>
-                <td>{p.name}</td>
-                <td>{p.status}</td>
-                <td>{new Date(p.createdAt).toLocaleDateString()}</td>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
+            <thead style={{ backgroundColor: "#007ACC", color: "white" }}>
+              <tr>
+                <th style={{ padding: "12px", textAlign: "left" }}>Užsakymo numeris</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Aprašymas</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Būsena</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Sukūrimo data</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Pristatymo data</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Užsakymo kaina</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Pastabos</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {projects.map((project) => (
+                <tr key={project.id} style={{ borderBottom: "1px solid #ddd" }}>
+                  <td style={{ padding: "12px", fontWeight: "bold" }}>#{project.id}</td>
+                  <td style={{ padding: "12px" }}>{project.description || "Nenurodyta"}</td>
+                  <td style={{ padding: "12px" }}>
+                    <span style={{
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      backgroundColor: 
+                        project.status === "Užbaigta" ? "#4CAF50" :
+                        project.status === "Atšaukta" ? "#f44336" :
+                        "#FFC107",
+                      color: "#000",
+                      fontSize: "0.9em"
+                    }}>
+                      {project.status || "Nenustatyta"}
+                    </span>
+                  </td>
+                  <td style={{ padding: "12px" }}>{formatDate(project.createdAt)}</td>
+                  <td style={{ padding: "12px" }}>{formatDate(project.deliveryDate)}</td>
+                  <td style={{ padding: "12px", fontWeight: "bold" }}>{formatPrice(project.orderPrice)}</td>
+                  <td style={{ padding: "12px", fontStyle: project.notes ? "normal" : "italic" }}>
+                    {project.notes || "Nėra pastabų"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

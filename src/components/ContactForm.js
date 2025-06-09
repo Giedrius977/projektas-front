@@ -40,7 +40,6 @@ const ContactForm = ({ onClose }) => {
 const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formattedDate = new Date().toISOString().slice(0, 19).replace("T", " "); // Teisingas formatas MySQL
 
     try {
         const response = await fetch("http://localhost:8083/api/contact-requests", {
@@ -51,8 +50,7 @@ const handleSubmit = async (e) => {
                 phone: formData.phone,
                 email: formData.email,
                 message: formData.message,
-                file: formData.file,
-                createdAt: formattedDate, 
+                file: formData.file
             }),
         });
 

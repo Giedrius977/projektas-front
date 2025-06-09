@@ -31,14 +31,12 @@ function ProjectStatus({ projectId }) {
       comment: `Statusas pakeistas į "${newStatus}"`
     }];
 
-    fetch(`http://localhost:8083/api/projects/${projectId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status: newStatus,
-        statusHistory: updatedHistory
-      })
-    })
+    fetch(`http://localhost:8083/api/projects/${projectId}/status`, {
+  method: "PATCH",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ status: newStatus })
+})
+
       .then(res => res.json())
       .then(updatedProject => {
         setProject(updatedProject);

@@ -24,8 +24,8 @@ const Header = ({ onLoginClick, userRole, isAuthenticated, onLogout }) => (
     <nav className="nav-links">
       {isAuthenticated ? (
         <>
-          {userRole === "admin" && <Link to="/admin" className="nav-link">Admin</Link>}
-          {userRole === "client" && <Link to="/client" className="nav-link">Užsakymai</Link>}
+          {userRole === "admin" && <Link to="/admin" className="nav-link">admin</Link>}
+          {userRole === "client" && <Link to="/client" className="nav-link">užsakovas</Link>}
           <span onClick={onLogout} className="nav-link">Atsijungti</span>
         </>
       ) : (
