@@ -119,25 +119,36 @@ const AdminPanel = () => {
     setEditingField({ id: null, field: null });
   };
 
-  const updateField = (id, field, value) => {
-    setRequests((prev) =>
-      prev.map((req) => (req.id === id ? { ...req, [field]: value } : req))
-    );
+  const updateField = async (id, field, value) => {
+  try {
+    let payload = { [field]: value };
+    
+    if (field === 'deliveryDate' && value) {
+      payload = { 
+        [field]: value // Jau formatuota kaip "YYYY-MM-DD"
+      };
+    }
 
-    fetch(`http://localhost:8083/api/contact-requests/${id}`, {
+    const response = await fetch(`http://localhost:8083/api/contact-requests/${id}`, {
       method: "PATCH",
-      headers: {
+      headers: { 
         "Content-Type": "application/json",
+        "Accept": "application/json" // Svarbu nurodyti
       },
-      body: JSON.stringify({ [field]: value }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Nepavyko išsaugoti ${field}`);
-      })
-      .catch((err) => {
-        alert(`Klaida saugant ${field}: ` + err.message);
-      });
-  };
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Update failed');
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error(`Klaida atnaujinant ${field}:`, err);
+    throw err;
+  }
+};
 
   const truncateLength = 100;
 
@@ -170,13 +181,13 @@ const AdminPanel = () => {
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
               El. paštas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "220px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "190px" }}>
               Žinutė
             </th>
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "30px" }}>
               Failas
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "55px" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
               Būsena
             </th>
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>

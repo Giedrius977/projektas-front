@@ -104,7 +104,7 @@ function ClientDashboard({ username, onLogout }) {
                 <th style={{ padding: "12px", textAlign: "left" }}>Užsakymo numeris</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Aprašymas</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Būsena</th>
-                <th style={{ padding: "12px", textAlign: "left" }}>Sukūrimo data</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Užsakyta</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Pristatymo data</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Užsakymo kaina</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Pastabos</th>
