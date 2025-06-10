@@ -45,10 +45,12 @@ const AdminPanel = () => {
 
   const formatDate = (isoString) => {
     if (!isoString) return "";
-    return new Date(isoString).toISOString().slice(0, 10);
+    return new Date(isoString).toLocaleDateString('lt-LT');
   };
 
   const handleDelete = (id) => {
+    if (!window.confirm("Ar tikrai norite ištrinti šią užklausą?")) return;
+    
     fetch(`http://localhost:8083/api/contact-requests/${id}`, {
       method: "DELETE",
     })
@@ -73,39 +75,43 @@ const AdminPanel = () => {
   };
 
   const convertToProject = (id) => {
-  const request = requests.find(req => req.id === id);
-  if (!request) return;
+    const request = requests.find(req => req.id === id);
+    if (!request) return;
 
-  fetch(`http://localhost:8083/api/contact-requests/convert/${id}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userId: id, // Ar tikrai tai yra teisingas userId?
-      deliveryDate: request.deliveryDate,
-      orderPrice: request.orderPrice,
-      notes: request.notes
-    }),
-  })
-  .then((res) => {
-    if (!res.ok) throw new Error("Nepavyko konvertuoti į projektą");
-    return res.json();
-  })
-  .then((project) => {
-    alert(`Užklausa paversta projektu #${project.id}`);
-    updateField(id, 'convertedToProject', true);
-  })
-  .catch((err) => alert(err.message));
-};
+    fetch(`http://localhost:8083/api/contact-requests/convert/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        deliveryDate: request.deliveryDate,
+        orderPrice: request.orderPrice,
+        notes: request.notes
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Nepavyko konvertuoti į projektą");
+        return res.json();
+      })
+      .then((project) => {
+        alert(`Užklausa paversta projektu #${project.id}`);
+        updateField(id, 'convertedToProject', true);
+        setRequests(prev =>
+          prev.map(req =>
+            req.id === id ? { ...req, project } : req
+          )
+        );
+      })
+      .catch((err) => alert(err.message));
+  };
 
   const startEditing = (id, field) => {
     setEditingField({ id, field });
   };
 
   const handleFieldChange = (id, field, value) => {
-    setRequests(prev => 
-      prev.map(req => 
+    setRequests(prev =>
+      prev.map(req =>
         req.id === id ? { ...req, [field]: value } : req
       )
     );
@@ -120,310 +126,216 @@ const AdminPanel = () => {
   };
 
   const updateField = async (id, field, value) => {
-  try {
-    let payload = { [field]: value };
-    
-    if (field === 'deliveryDate' && value) {
-      payload = { 
-        [field]: value // Jau formatuota kaip "YYYY-MM-DD"
-      };
+    try {
+      const payload = { [field]: value };
+
+      const response = await fetch(`http://localhost:8083/api/contact-requests/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Update failed');
+      }
+
+      return await response.json();
+    } catch (err) {
+      console.error(`Klaida atnaujinant ${field}:`, err);
+      throw err;
     }
-
-    const response = await fetch(`http://localhost:8083/api/contact-requests/${id}`, {
-      method: "PATCH",
-      headers: { 
-        "Content-Type": "application/json",
-        "Accept": "application/json" // Svarbu nurodyti
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Update failed');
-    }
-
-    return await response.json();
-  } catch (err) {
-    console.error(`Klaida atnaujinant ${field}:`, err);
-    throw err;
-  }
-};
+  };
 
   const truncateLength = 100;
 
   return (
-    <div className="admin-panel" style={{ padding: "20px" }}>
-      <h2 style={{ marginBottom: "20px" }}>Užklausos</h2>
+    <div className="admin-panel-container">
+      <div className="admin-header">
+        <h2>Užklausų valdymas</h2>
+        <div className="admin-controls">
+          {loading && <div className="loading-spinner"></div>}
+          {error && <div className="error-message">{error}</div>}
+        </div>
+      </div>
 
-      {loading && <p>Kraunasi...</p>}
-      {error && <p className="error">Klaida: {error}</p>}
+      <div className="table-responsive">
+        <table className="admin-requests-table">
+          <thead>
+            <tr>
+              <th>Užsakymo nr.</th>
+              <th>Data</th>
+              <th>Vardas</th>
+              <th>Telefonas</th>
+              <th>El. paštas</th>
+              <th>Žinutė</th>
+              <th>Failas</th>
+              <th>Būsena</th>
+              <th>Veiksmai</th>
+              <th>Pristatymo data</th>
+              <th>Kaina</th>
+              <th>Pastabos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {requests.length > 0 ? (
+              requests.map((request) => {
+                const isExpanded = expandedMessageIds.has(request.id);
+                const message = request.message || "";
+                const shortMessage = message.length > truncateLength
+                  ? message.slice(0, truncateLength) + "..."
+                  : message;
 
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          tableLayout: "fixed",
-        }}
-      >
-        <thead style={{ backgroundColor: "#007ACC", color: "white" }}>
-          <tr>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "40px" }}>
-              Data
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "30px" }}>
-              Vardas
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "55px" }}>
-              Telefonas
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
-              El. paštas
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "190px" }}>
-              Žinutė
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "30px" }}>
-              Failas
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "60px" }}>
-              Būsena
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
-              Veiksmai
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
-              Pristatymo data
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "50px" }}>
-              Užsakymo kaina
-            </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "70px" }}>
-              Pastabos
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {requests.map((request) => {
-            const isExpanded = expandedMessageIds.has(request.id);
-            const message = request.message || "";
-            const shortMessage =
-              message.length > truncateLength
-                ? message.slice(0, truncateLength) + "..."
-                : message;
-
-            return (
-              <tr key={request.id} style={{ borderBottom: "1px solid #ddd" }}>
-                <td style={{ padding: "10px", whiteSpace: "nowrap" }}>
-                  {formatDate(request.createdAt)}
-                </td>
-                <td style={{ padding: "10px" }}>{request.name}</td>
-                <td style={{ padding: "10px" }}>{request.phone}</td>
-                <td style={{ padding: "10px" }}>{request.email}</td>
-                <td style={{ padding: "10px" }}>
-                  {isExpanded ? message : shortMessage}
-                  {message.length > truncateLength && (
-                    <button
-                      onClick={() => toggleMessage(request.id)}
-                      style={{
-                        marginLeft: "10px",
-                        background: "none",
-                        border: "none",
-                        color: "#007ACC",
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                        padding: 0,
-                        fontSize: "0.9em",
-                      }}
-                    >
-                      {isExpanded ? "Rodyti mažiau" : "Rodyti daugiau"}
-                    </button>
-                  )}
-                </td>
-                <td style={{ padding: "10px", textAlign: "center" }}>
-                  {request.file ? (
-                    <a
-                      href={request.file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: "#007ACC",
-                        textDecoration: "underline",
-                        fontWeight: "bold",
-                        fontSize: "0.9em",
-                      }}
-                    >
-                      Peržiūrėti
-                    </a>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-                <td style={{ padding: "10px" }}>
-                  <select
-                    value={request.status}
-                    onChange={(e) =>
-                      handleStatusChange(request.id, e.target.value)
-                    }
-                    style={{ padding: "4px", fontSize: "0.9em", width: "100%" }}
-                  >
-                    {statusOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td style={{ padding: "10px", textAlign: "center" }}>
-                  <button
-                    onClick={() => handleDelete(request.id)}
-                    style={{
-                      backgroundColor: "#d9534f",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      padding: "5px 10px",
-                      cursor: "pointer",
-                      marginBottom: "5px",
-                      width: "100%",
-                    }}
-                  >
-                    Ištrinti
-                  </button>
-                  <button
-                    onClick={() => convertToProject(request.id)}
-                    disabled={request.convertedToProject}
-                    style={{
-                      backgroundColor: request.convertedToProject
-                        ? "#6c757d"
-                        : "#28a745",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      padding: "5px 10px",
-                      cursor: request.convertedToProject ? "default" : "pointer",
-                      width: "100%",
-                    }}
-                  >
-                    {request.convertedToProject
-                      ? "projektas"
-                      : "sukurti projektą"}
-                  </button>
-                </td>
-                <td style={{ padding: "10px" }}>
-                  {editingField.id === request.id && editingField.field === 'deliveryDate' ? (
-                    <>
-                      <input
-                        type="date"
-                        value={request.deliveryDate || ''}
-                        onChange={(e) => handleFieldChange(request.id, 'deliveryDate', e.target.value)}
-                        style={{ width: '100%', padding: '4px' }}
-                      />
-                      <button 
-                        onClick={() => saveField(request.id, 'deliveryDate')}
-                        style={{ 
-                          marginTop: '5px',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '2px 5px',
-                          cursor: 'pointer'
-                        }}
+                return (
+                  <tr key={request.id} className={request.convertedToProject ? "converted-row" : ""}>
+                    <td className="id-cell">{request.id}</td>
+                    <td>{formatDate(request.createdAt)}</td>
+                    <td>{request.name}</td>
+                    <td>{request.phone}</td>
+                    <td>{request.email}</td>
+                    <td className="message-cell">
+                      <div className={`message-content ${isExpanded ? "expanded" : ""}`}>
+                        {isExpanded ? message : shortMessage}
+                        {message.length > truncateLength && (
+                          <button 
+                            onClick={() => toggleMessage(request.id)}
+                            className="toggle-message-btn"
+                          >
+                            {isExpanded ? "↑" : "↓"}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      {request.file ? (
+                        <a 
+                          href={request.file} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="file-link"
+                        >
+                          <span className="file-icon">📄</span>
+                        </a>
+                      ) : "-"}
+                    </td>
+                    <td>
+                      <select
+                        value={request.status}
+                        onChange={(e) => handleStatusChange(request.id, e.target.value)}
+                        className="status-select"
                       >
-                        ✓
-                      </button>
-                    </>
-                  ) : (
-                    <div 
-                      onClick={() => startEditing(request.id, 'deliveryDate')}
-                      style={{ cursor: 'pointer', minHeight: '20px' }}
-                    >
-                      {request.deliveryDate ? formatDate(request.deliveryDate) : "Nenustatyta"}
-                    </div>
-                  )}
-                </td>
-                <td style={{ padding: "10px" }}>
-                  {editingField.id === request.id && editingField.field === 'orderPrice' ? (
-                    <>
-                      <input
-                        type="text"
-                        value={request.orderPrice || ''}
-                        onChange={(e) => handleFieldChange(request.id, 'orderPrice', e.target.value)}
-                        style={{ width: '100%', padding: '4px' }}
-                        placeholder="Įveskite kainą"
-                      />
-                      <button 
-                        onClick={() => saveField(request.id, 'orderPrice')}
-                        style={{ 
-                          marginTop: '5px',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '2px 5px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        ✓
-                      </button>
-                    </>
-                  ) : (
-                    <div 
-                      onClick={() => startEditing(request.id, 'orderPrice')}
-                      style={{ cursor: 'pointer', minHeight: '20px' }}
-                    >
-                      {request.orderPrice || "Nenustatyta"}
-                    </div>
-                  )}
-                </td>
-                <td style={{ padding: "10px" }}>
-                  {editingField.id === request.id && editingField.field === 'notes' ? (
-                    <>
-                      <textarea
-                        value={request.notes || ''}
-                        onChange={(e) => handleFieldChange(request.id, 'notes', e.target.value)}
-                        style={{ width: '100%', padding: '4px', minHeight: '50px' }}
-                        placeholder="Įveskite pastabas"
-                      />
-                      <button 
-                        onClick={() => saveField(request.id, 'notes')}
-                        style={{ 
-                          marginTop: '5px',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '2px 5px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        ✓
-                      </button>
-                    </>
-                  ) : (
-                    <div 
-                      onClick={() => startEditing(request.id, 'notes')}
-                      style={{ cursor: 'pointer', minHeight: '50px' }}
-                    >
-                      {request.notes || "Nėra pastabų"}
-                    </div>
-                  )}
+                        {statusOptions.map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="actions-cell">
+                      <div className="action-buttons">
+                        <button 
+                          onClick={() => handleDelete(request.id)}
+                          className="delete-btn"
+                        >
+                          Ištrinti
+                        </button>
+                        <button
+                          onClick={() => convertToProject(request.id)}
+                          disabled={request.convertedToProject}
+                          className={`convert-btn ${request.convertedToProject ? "converted" : ""}`}
+                        >
+                          {request.convertedToProject ? "✓ Projektas" : "Sukurti projektą"}
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      {editingField.id === request.id && editingField.field === 'deliveryDate' ? (
+                        <div className="edit-container">
+                          <input
+                            type="date"
+                            value={request.deliveryDate || ''}
+                            onChange={(e) => handleFieldChange(request.id, 'deliveryDate', e.target.value)}
+                            className="edit-input"
+                          />
+                          <button 
+                            onClick={() => saveField(request.id, 'deliveryDate')}
+                            className="save-btn"
+                          >
+                            ✓
+                          </button>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => startEditing(request.id, 'deliveryDate')}
+                          className="editable-field"
+                        >
+                          {request.deliveryDate ? formatDate(request.deliveryDate) : "Nenustatyta"}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      {editingField.id === request.id && editingField.field === 'orderPrice' ? (
+                        <div className="edit-container">
+                          <input
+                            type="text"
+                            value={request.orderPrice || ''}
+                            onChange={(e) => handleFieldChange(request.id, 'orderPrice', e.target.value)}
+                            className="edit-input"
+                          />
+                          <button 
+                            onClick={() => saveField(request.id, 'orderPrice')}
+                            className="save-btn"
+                          >
+                            ✓
+                          </button>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => startEditing(request.id, 'orderPrice')}
+                          className="editable-field"
+                        >
+                          {request.orderPrice || "Nenustatyta"}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      {editingField.id === request.id && editingField.field === 'notes' ? (
+                        <div className="edit-container">
+                          <textarea
+                            value={request.notes || ''}
+                            onChange={(e) => handleFieldChange(request.id, 'notes', e.target.value)}
+                            className="edit-textarea"
+                          />
+                          <button 
+                            onClick={() => saveField(request.id, 'notes')}
+                            className="save-btn"
+                          >
+                            ✓
+                          </button>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => startEditing(request.id, 'notes')}
+                          className="editable-field notes-field"
+                        >
+                          {request.notes || "Nėra pastabų"}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="12" className="no-requests">
+                  {loading ? "Kraunasi..." : "Užklausų nėra"}
                 </td>
               </tr>
-            );
-          })}
-          {requests.length === 0 && !loading && (
-            <tr>
-              <td colSpan="11" style={{ textAlign: "center", padding: "20px" }}>
-                Užklausų nėra
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
