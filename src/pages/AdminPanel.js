@@ -116,14 +116,39 @@ const AdminPanel = () => {
       )
     );
   };
+const saveField = async (id, field) => {
+  const request = requests.find((req) => req.id === id);
+  if (!request) return;
 
-  const saveField = (id, field) => {
-    const request = requests.find(req => req.id === id);
-    if (!request) return;
+  let value = request[field];
 
-    updateField(id, field, request[field]);
+  if (field === "deliveryDate") {
+    if (!value) {
+      value = null;
+    } else {
+      const date = new Date(value);
+      if (isNaN(date.getTime())) {
+        alert("Neteisingas datos formatas.");
+        return;
+      }
+
+      // Formatuojam kaip yyyy-MM-dd
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      value = `${year}-${month}-${day}`;
+    }
+  }
+
+  try {
+    await updateField(id, field, value);
     setEditingField({ id: null, field: null });
-  };
+  } catch (err) {
+    alert(`Klaida išsaugant lauką: ${err.message}`);
+  }
+};
+
+
 
   const updateField = async (id, field, value) => {
     try {

@@ -38,6 +38,9 @@ const Header = ({ onLoginClick, userRole, isAuthenticated, onLogout }) => (
   </header>
 );
 
+
+
+
 // Apsaugotas maršrutas
 const ProtectedRoute = ({ children, isAuthenticated, userRole, requiredRole }) => {
   if (!isAuthenticated || userRole !== requiredRole) {

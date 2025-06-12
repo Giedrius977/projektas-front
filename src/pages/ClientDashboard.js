@@ -7,46 +7,47 @@ function ClientDashboard({ username, onLogout }) {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // 1. Get user by username
-        const userResponse = await fetch(
-          `http://localhost:8083/api/users/by-username/${username}`
-        );
-        
-        if (!userResponse.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-        
-        const userData = await userResponse.json();
-        setUserInfo(userData);
-        
-        // 2. Get user's projects with additional fields
-        const projectsResponse = await fetch(
-          `http://localhost:8083/api/users/${userData.id}/projects?includeContactInfo=true`
-        );
-        
-        if (!projectsResponse.ok) {
-          throw new Error("Failed to fetch projects");
-        }
-        
-        const projectsData = await projectsResponse.json();
-        setProjects(projectsData);
-        
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
+  async function fetchData() {
+    try {
+      setLoading(true);
+      setError(null);
 
-    if (username) {
-      fetchData();
+      const userResponse = await fetch(
+        `http://localhost:8083/api/users/by-username/${username}`
+      );
+
+      if (!userResponse.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+
+      const userData = await userResponse.json();
+      setUserInfo(userData);
+
+      const projectsResponse = await fetch(
+        `http://localhost:8083/api/users/${userData.id}/projects?includeContactInfo=true`
+      );
+
+      if (!projectsResponse.ok) {
+        throw new Error("Failed to fetch projects");
+      }
+
+      const projectsData = await projectsResponse.json();
+      console.log("Received projects:", projectsData); // 🧪 <- pridėta eilutė
+
+      setProjects(projectsData);
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, [username]);
+  }
+
+  if (username) {
+    fetchData();
+  }
+}, [username]);
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "Nenustatyta";
@@ -101,7 +102,7 @@ function ClientDashboard({ username, onLogout }) {
           <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
             <thead style={{ backgroundColor: "#007ACC", color: "white" }}>
               <tr>
-                <th style={{ padding: "12px", textAlign: "left" }}>Užsakymo numeris</th>
+                <th style={{ padding: "12px", textAlign: "left" }}>Užsakymo nr.</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Aprašymas</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Būsena</th>
                 <th style={{ padding: "12px", textAlign: "left" }}>Užsakyta</th>
@@ -112,8 +113,10 @@ function ClientDashboard({ username, onLogout }) {
             </thead>
             <tbody>
               {projects.map((project) => (
-                <tr key={project.id} style={{ borderBottom: "1px solid #ddd" }}>
-                  <td style={{ padding: "12px", fontWeight: "bold" }}>#{project.id}</td>
+                <tr key={project.contactRequest?.id || project.id}>
+  <td style={{ padding: "12px", fontWeight: "bold" }}>
+    #{project.contactRequest?.id || "Nežinomas"}
+  </td>
                   <td style={{ padding: "12px" }}>{project.description || "Nenurodyta"}</td>
                   <td style={{ padding: "12px" }}>
                     <span style={{
