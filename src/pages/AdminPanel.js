@@ -7,7 +7,19 @@ import "../styles/AdminPanel.css";
 // API servisas atskirai
 const apiService = {
   fetchRequests: () => fetch("http://localhost:8083/api/contact-requests").then(handleResponse),
-  deleteRequest: (id) => fetch(`http://localhost:8083/api/contact-requests/${id}`, { method: "DELETE" }).then(handleResponse),
+  deleteRequest: (id) => 
+  fetch(`http://localhost:8083/api/contact-requests/${id}`, { 
+    method: "DELETE" 
+  })
+  .then(res => {
+    if (!res.ok) {
+      return res.json().then(err => Promise.reject(err));
+    }
+    return res;
+  })
+  .catch(err => {
+    throw new Error(err.message || 'Failed to delete request');
+  }),
   convertToProject: (id, data) => fetch(`http://localhost:8083/api/contact-requests/convert/${id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
