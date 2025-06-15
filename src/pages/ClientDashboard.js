@@ -7,47 +7,76 @@ function ClientDashboard({ username, onLogout }) {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-  async function fetchData() {
-    try {
-      setLoading(true);
-      setError(null);
+    async function fetchData() {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const userResponse = await fetch(
-        `http://localhost:8083/api/users/by-username/${username}`
-      );
+        // 1. Gauti vartotojo duomenis
+        const userResponse = await fetch(
+          `http://localhost:8083/api/users/by-username/${username}`,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }
+        );
 
-      if (!userResponse.ok) {
-        throw new Error("Failed to fetch user data");
+        if (!userResponse.ok) {
+          throw new Error("Nepavyko gauti vartotojo duomenų");
+        }
+
+        const userData = await userResponse.json();
+        setUserInfo({
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone
+        });
+
+        // 2. Gauti projektus su parametru, kad sumažinti atsakymo dydį
+        const projectsResponse = await fetch(
+          `http://localhost:8083/api/users/${userData.id}/projects?simple=true`,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!projectsResponse.ok) {
+          throw new Error("Nepavyko gauti projektų sąrašo");
+        }
+
+        const projectsData = await projectsResponse.json();
+        
+        // 3. Transformuoti gautus duomenis
+        const simplifiedProjects = projectsData.map(project => ({
+          id: project.id,
+          description: project.description,
+          status: project.status,
+          createdAt: project.createdAt,
+          deliveryDate: project.deliveryDate,
+          orderPrice: project.orderPrice,
+          notes: project.notes,
+          contactRequestId: project.contactRequest?.id || null
+        }));
+
+        setProjects(simplifiedProjects);
+
+      } catch (err) {
+        console.error("Klaida:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-
-      const userData = await userResponse.json();
-      setUserInfo(userData);
-
-      const projectsResponse = await fetch(
-        `http://localhost:8083/api/users/${userData.id}/projects?includeContactInfo=true`
-      );
-
-      if (!projectsResponse.ok) {
-        throw new Error("Failed to fetch projects");
-      }
-
-      const projectsData = await projectsResponse.json();
-      console.log("Received projects:", projectsData); // 🧪 <- pridėta eilutė
-
-      setProjects(projectsData);
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
-  }
 
-  if (username) {
-    fetchData();
-  }
-}, [username]);
-
+    if (username) {
+      fetchData();
+    }
+  }, [username]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "Nenustatyta";
@@ -90,7 +119,7 @@ function ClientDashboard({ username, onLogout }) {
         </div>
       )}
 
-      {loading && <p>Kraunama...</p>}
+      {loading && <div style={{ textAlign: "center", padding: "20px" }}>Kraunama...</div>}
       {error && <p style={{ color: "red" }}>Klaida: {error}</p>}
 
       {!loading && projects.length === 0 && !error && (
@@ -113,10 +142,10 @@ function ClientDashboard({ username, onLogout }) {
             </thead>
             <tbody>
               {projects.map((project) => (
-                <tr key={project.contactRequest?.id || project.id}>
-  <td style={{ padding: "12px", fontWeight: "bold" }}>
-    #{project.contactRequest?.id || "Nežinomas"}
-  </td>
+                <tr key={project.id}>
+                  <td style={{ padding: "12px", fontWeight: "bold" }}>
+                    #{project.contactRequestId || project.id}
+                  </td>
                   <td style={{ padding: "12px" }}>{project.description || "Nenurodyta"}</td>
                   <td style={{ padding: "12px" }}>
                     <span style={{

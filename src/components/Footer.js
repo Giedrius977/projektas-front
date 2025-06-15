@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import ContactForm from '../components/ContactForm';
 import '../styles/Footer.css';
 
-const Footer = () => {
+const Footer = ({ userRole }) => {
   const [showForm, setShowForm] = useState(false);
+
+  // Jei vartotojas yra admin, nerodyti mygtuko ir formos
+  if (userRole === "admin") return null;
 
   return (
     <footer className="footer">

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route, Link} from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 
 import AutoChangingGallery from "./components/AutoChangingGallery";
 import CategoryGallery from "./components/CategoryGallery";
@@ -38,9 +38,6 @@ const Header = ({ onLoginClick, userRole, isAuthenticated, onLogout }) => (
   </header>
 );
 
-
-
-
 // Apsaugotas maršrutas
 const ProtectedRoute = ({ children, isAuthenticated, userRole, requiredRole }) => {
   if (!isAuthenticated || userRole !== requiredRole) {
@@ -56,21 +53,21 @@ function App() {
   const [username, setUsername] = useState(null); // Reikalinga ClientDashboard
 
   const handleLogin = (username, password) => {
-  if (username === "admin" && password === "admin123") {
-    setIsAuthenticated(true);
-    setUserRole("admin");
-    setIsLoginOpen(false);
-    setUsername(username);
-  } else if (password === username + "123") {
-    // Bet koks klientas, jei slaptažodis yra username + '123'
-    setIsAuthenticated(true);
-    setUserRole("client");
-    setIsLoginOpen(false);
-    setUsername(username);
-  } else {
-    alert("Neteisingi prisijungimo duomenys");
-  }
-};
+    if (username === "admin" && password === "admin123") {
+      setIsAuthenticated(true);
+      setUserRole("admin");
+      setIsLoginOpen(false);
+      setUsername(username);
+    } else if (password === username + "123") {
+      // Bet koks klientas, jei slaptažodis yra username + '123'
+      setIsAuthenticated(true);
+      setUserRole("client");
+      setIsLoginOpen(false);
+      setUsername(username);
+    } else {
+      alert("Neteisingi prisijungimo duomenys");
+    }
+  };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
@@ -126,7 +123,8 @@ function App() {
         />
       </Routes>
 
-      <Footer />
+      {/* Perduodam userRole į Footer */}
+      <Footer userRole={userRole} />
     </>
   );
 }
