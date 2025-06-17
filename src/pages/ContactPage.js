@@ -18,10 +18,10 @@ const ContactPage = () => {
       {/* Kontaktų informacija */}
       <div className="contact-info">
         <h2>Susisiekite su mumis</h2>
-        <p><strong>Įmonė:</strong> MB „ReBald“</p>
+        <p><strong>Įmonė:</strong> MB „Sėkmės drožlės“</p>
         <p><strong>Tel.:</strong> +370 612 34567</p>
         <p><strong>El. paštas:</strong> info@rebald.lt</p>
-        <p><strong>Adresas:</strong> Kaunas, Lietuva</p>
+        <p><strong>Adresas:</strong> Žalioji g.17, Kaunas, Lietuva</p>
       </div>
 
       {/* Pateikti užklausą mygtukas */}
