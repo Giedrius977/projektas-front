@@ -9,7 +9,6 @@ import ContactPage from "./pages/ContactPage";
 import About from "./pages/About";
 import LoginModal from "./components/LoginModal";
 import ClientDashboard from "./pages/ClientDashboard";
-import OrderDetails from './pages/OrderDetails';
 
 import "./App.css";
 import "./styles/Footer.css";
@@ -109,18 +108,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-<Route 
-  path="/order-details/:id" 
-  element={
-    <ProtectedRoute
-      isAuthenticated={isAuthenticated}
-      userRole={userRole}
-      requiredRole="admin"
-    >
-      <OrderDetails />
-    </ProtectedRoute>
-  } 
-/>
+
         <Route
           path="/client"
           element={
@@ -133,7 +121,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
       </Routes>
 
       {/* Perduodam userRole į Footer */}

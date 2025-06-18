@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import OrderProgressTracker from "../pages/OrderProgressTracker";
 
 function ClientDashboard({ username, onLogout }) {
   const [projects, setProjects] = useState([]);
@@ -148,8 +147,19 @@ function ClientDashboard({ username, onLogout }) {
                     #{project.contactRequestId || project.id}
                   </td>
                   <td style={{ padding: "12px" }}>{project.description || "Nenurodyta"}</td>
-                  <td style={{ padding: "12px" }}><OrderProgressTracker currentStatus={project.status} 
-                  editable={false}/>
+                  <td style={{ padding: "12px" }}>
+                    <span style={{
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      backgroundColor: 
+                        project.status === "Užbaigta" ? "#4CAF50" :
+                        project.status === "Atšaukta" ? "#f44336" :
+                        "#FFC107",
+                      color: "#000",
+                      fontSize: "0.9em"
+                    }}>
+                      {project.status || "Nenustatyta"}
+                    </span>
                   </td>
                   <td style={{ padding: "12px" }}>{formatDate(project.createdAt)}</td>
                   <td style={{ padding: "12px" }}>{formatDate(project.deliveryDate)}</td>
